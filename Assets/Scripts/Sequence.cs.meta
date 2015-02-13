@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 68690b7c9e544614d9712e19c054d185
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - obstaclePrefab: {fileID: 165796, guid: 714c65ae2260d6f42867eae4af626ec8, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
