@@ -4,12 +4,11 @@ using UnityEngine.UI;
 
 public class Hint : MonoBehaviour {
 
-    Vector3 speed;
-    Vector2 startPos;
     bool isActive;
-    bool seen;
-
+    bool isFadedIn;
     string nextCaption;
+    const float fadeTime = 1.0f;
+    const float minVisibleTime = 0.5f;
 
     Text textComponent;
 
@@ -17,25 +16,21 @@ public class Hint : MonoBehaviour {
 	void Start ()
     {
         textComponent = GetComponent<Text>();
-        nextCaption = "";
-        seen = false;
-        speed = new Vector3(-1.0f, 0.0f, 0.0f);
-        isActive = false;
-        startPos = transform.position;
+        Reset();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        if (isActive)
-            transform.position += speed;
-
-        if (renderer.isVisible)
-            seen = true;
-
-        if (seen && !renderer.isVisible)
+        if (isActive && isFadedIn && nextCaption != "")
         {
-            isActive = false;
+            FadeOut();
+        }
+
+        if (!isActive)
+        {
+            if (nextCaption != "")
+                Activate(nextCaption);
         }
 	}
 
@@ -47,10 +42,58 @@ public class Hint : MonoBehaviour {
         }
         else
         {
+            nextCaption = ""; // could use some list here
             textComponent.text = caption;
-            seen = false;
             isActive = true;
-            transform.position = startPos;
+            FadeIn();
         }
+    }
+
+    public void FadeIn()
+    {
+        isFadedIn = false;
+        StartCoroutine(FadeIn(fadeTime));
+    }
+
+    public void FadeOut()
+    {
+        isFadedIn = false;
+        StartCoroutine(FadeOut(fadeTime));
+    }
+
+    IEnumerator FadeIn(float totalTime)
+    {
+        float timePassed = 0.0f;
+        while (textComponent.color.a < 1.0f)
+        {
+            timePassed += Time.deltaTime;
+            textComponent.color = new Color(textComponent.color.r, textComponent.color.g, textComponent.color.b, Mathf.Lerp(0.0f, 1.0f, timePassed / totalTime));
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(minVisibleTime);
+        isFadedIn = true;
+    }
+
+    IEnumerator FadeOut(float totalTime)
+    {
+        float timePassed = 0.0f;
+
+        while (textComponent.color.a > 0.0f)
+        {
+            timePassed += Time.deltaTime;
+            textComponent.color = new Color(textComponent.color.r, textComponent.color.g, textComponent.color.b, Mathf.Lerp(1.0f, 0.0f, timePassed / totalTime));
+            yield return null;
+        }
+
+        isActive = false;
+    }
+
+    internal void Reset()
+    {
+        nextCaption = "";
+        isActive = false;
+        isFadedIn = false;
+        textComponent.color = new Color(textComponent.color.r, textComponent.color.g, textComponent.color.b, 0.0f);
     }
 }

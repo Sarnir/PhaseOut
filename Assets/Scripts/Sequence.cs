@@ -8,17 +8,19 @@ public class Sequence
     float spawnPercent;
     float timePassed;
     float duration;
+    float speed;
     bool isActive;
     ObstacleType obstacleType;
 
     Vector2 spawnPosition;
 
-    string[] obstacleNames = { "CubeObstacle", "CubePhaseObstacle" };
+    string[] obstacleNames = { "CubeObstacle", "CubePhaseObstacle", "CubeInvPhaseObstacle" };
 
-    public Sequence(int _numObjects, float _duration, Vector2 _pos, ObstacleType _obstacleType)
+    public Sequence(int _numObjects, float _duration, float _speed, Vector2 _pos, ObstacleType _obstacleType)
     {
         isActive = false;
         numObjectsToSpawn = _numObjects;
+        speed = -Mathf.Abs(_speed);
         duration = _duration;
         spawnPosition = _pos;
         obstacleType = _obstacleType;
@@ -43,6 +45,7 @@ public class Sequence
             if (timePassed / duration > spawnPercent && spawnPercent < 1.0f)
             {
                 GameObject obstacle = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/" + obstacleNames[(int)obstacleType])) as GameObject;
+                obstacle.GetComponent<Obstacle>().SetSpeed(speed);
                 obstacle.transform.position = spawnPosition;
 
                 spawnPercent += 1 / (float)numObjectsToSpawn;

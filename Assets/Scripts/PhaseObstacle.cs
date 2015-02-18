@@ -1,26 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PhaseObstacle : Obstacle
+[RequireComponent(typeof(Obstacle))]
+public class PhaseObstacle : MonoBehaviour
 {
     PlayerController player;
+    Obstacle obstacle;
     bool isPhasedOut;
+    float spawnTime;
+
+    [SerializeField]
+    bool inverted;
+
+    const float minVisibleTime = 0.3f;
 
     void Start()
     {
-        base.Start();
+        spawnTime = Time.time;
         isPhasedOut = true;
         PhaseOut(false);
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        obstacle = GetComponent<Obstacle>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        base.Update();
-
-        PhaseOut(player.IsPhasedOut());
+        if(Time.time - spawnTime > minVisibleTime)
+            PhaseOut(player.IsPhasedOut() ^ inverted);
     }
 
     void PhaseOut(bool val)
